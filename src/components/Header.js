@@ -1,11 +1,11 @@
-
+import photo from "../Trollface.png";
 
 const Header = () => {
     return (
         <header>
             <div dir="ltr" className="container">
                 <img
-                src="http://www.pngall.com/wp-content/uploads/2016/05/Trollface.png"
+                src={photo}
                 alt="face"
                 ></img>
                 <h1>هاندو ميمز</h1>
