@@ -1,36 +1,101 @@
 
-import React, {Component} from "react";
+import React, {useState, useEffect} from "react";
 
 
-class MemeGenerator extends Component {
+function MemeGenerator(){
 
-    constructor(){
-        super()
-        this.state = {
-            randomMeme: "http://i.imgflip.com/1bij.jpg",
-            topText: "دا فوق",
-            bottomText:"دا تحت",
-            allMemes: [],
-            isloading: false
-        }
+    const [randomMeme, setRandomMeme] = useState("http://i.imgflip.com/1bij.jpg");
+    const [inputs, setInputs] = useState({topText: "دا فوق", bottomText: "دا تحت"});
+    const [allMemes, setAllMemes] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-        this.changeHandle = this.changeHandle.bind(this);
-        this.getRandomImg = this.getRandomImg.bind(this);
+
+    function changeHandle(e){
+        const {name, value} = e.target;
+        
+        setInputs(prevInputs => {
+            return {...prevInputs, [name]: value};
+        })
+
     }
 
-    componentDidMount(){
+       function getRandomImg(e){
+        e.preventDefault();
+
+        const randomNumber = Math.floor(Math.random() * allMemes.length);
+        const randomImg = allMemes[randomNumber].url;
+        
+
+        setRandomMeme(randomImg);
+        setIsLoading(true);
+
+        
+
+    }
+
+
+    useEffect(()=>{
 
         fetch("https://api.imgflip.com/get_memes")
         .then(data => data.json())
         .then(response => {
             const {memes} = response.data;
 
-            this.setState({
-                allMemes: memes
-            })
+            setAllMemes(memes);
 
 
         })
+    } , [])
+
+    return (
+        <div onSubmit={getRandomImg} className="main container">
+                <form>
+                    <input
+                        type="text"
+                        name="topText"
+                        placeholder="النص العلوي"
+                        
+                        onChange={changeHandle}
+                    />
+                    <input
+                        type="text"
+                        name="bottomText"
+                        placeholder="النص السفلي"
+                        
+                        onChange={changeHandle}
+                    />
+
+                    <button>{isLoading? "يتم التحميل...": "انشئ"}</button>
+                    
+                </form>
+
+            <div className="meme container">
+                <img
+                    onLoad={()=>{setIsLoading(false)}}
+                    src={randomMeme}
+                    alt="meme"
+                />
+
+                <h2 className="top" >{inputs.topText}</h2>
+                <h2 className="bottom" >{inputs.bottomText}</h2>
+            </div>
+
+            </div>
+    )
+}
+
+
+
+
+
+/*
+class MemeGenerator extends Component {
+
+    
+
+    componentDidMount(){
+
+        
 
         
     }
@@ -99,5 +164,5 @@ class MemeGenerator extends Component {
         )
     }
 }
-
+*/
 export default MemeGenerator;
